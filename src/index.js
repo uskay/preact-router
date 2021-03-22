@@ -88,7 +88,8 @@ function routeFromLink(node) {
 	if (!href || !href.match(/^\//g) || (target && !target.match(/^_?self$/i))) return;
 
 	// Progressive enhancement: documentTransition
-	// check if the node has a documentTransition option
+	// Explainer: https://github.com/vmpstr/shared-element-transitions
+	// Check if the node has a documentTransition option
 	if (!(hasDocumentTransition && documentTransition)) {
 		// attempt to route, if no match simply cede control to browser
 		return route(href);
