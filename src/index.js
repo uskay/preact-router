@@ -109,9 +109,9 @@ function routeWithTransition(href, documentTransition, documentTransitionDuratio
 		}
 	}
 	document.documentTransition.prepare(preparationOption).then(() => {
-    route(href);
-    document.documentTransition.start();
-  });
+		route(href);
+		document.documentTransition.start();
+	});
 }
 
 function handleLinkClick(e) {
