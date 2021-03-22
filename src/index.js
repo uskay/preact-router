@@ -79,15 +79,40 @@ function routeFromLink(node) {
 	if (!node || !node.getAttribute) return;
 
 	let href = node.getAttribute('href'),
-		target = node.getAttribute('target');
+		target = node.getAttribute('target'),
+		hasDocumentTransition = !!document.documentTransition,
+		documentTransition = node.getAttribute('documentTransition'),
+		documentTransitionDuration = node.getAttribute('documentTransitionDuration');
 
 	// ignore links with targets and non-path URLs
 	if (!href || !href.match(/^\//g) || (target && !target.match(/^_?self$/i))) return;
 
-	// attempt to route, if no match simply cede control to browser
-	return route(href);
+	// Progressive enhancement: documentTransition
+	// check if the node has a documentTransition option
+	if (!(hasDocumentTransition && documentTransition)) {
+		// attempt to route, if no match simply cede control to browser
+		return route(href);
+	}
+	
+	// Navigate to new route with transition effect
+	routeWithTransition(href, documentTransition, documentTransitionDuration);
 }
 
+function routeWithTransition(href, documentTransition, documentTransitionDuration) {
+	let preparationOption = {
+		rootTransition: documentTransition
+	};
+	if (documentTransitionDuration) {
+		const duration = parseInt(documentTransitionDuration);
+		if (Number.isInteger(duration)) {
+			preparationOption.duration = documentTransitionDuration;
+		}
+	}
+	document.documentTransition.prepare(preparationOption).then(() => {
+    route(href);
+    document.documentTransition.start();
+  });
+}
 
 function handleLinkClick(e) {
 	if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || e.button!==0) return;
